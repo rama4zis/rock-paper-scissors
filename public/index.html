@@ -11,6 +11,14 @@
 
 <body>
     <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+
+        <!-- make input username -->
+        <div class="mb-8">
+            <input type="text" id="username" placeholder="Enter your username"
+                class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button id="set-username" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">SET</button>
+        </div>
+
         <h1 class="text-3xl font-bold text-center">Rock and Paper Game 🎮</h1>
         <div class="flex flex-wrap justify-center gap-8 my-8">
             <div data-value="rock"
@@ -37,18 +45,28 @@
     </div>
 
     <!-- make float chat -->
-    <div class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg p-4 w-64">
+    <div class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg p-4 w-80">
         <h2 class="text-lg font-semibold mb-2">Chat</h2>
-        <div class="overflow-y-auto h-40 mb-2">
+        <div class="overflow-y-auto mb-2">
             <p class="text-gray-700">Welcome to the game! Choose your move.</p>
         </div>
-        <input type="text" placeholder="Type a message..."
-            class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <button class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">
-            Send
-        </button>
+        <div id="chat-messages" class="overflow-y-auto h-52 mb-2">
+            <!-- Chat messages will be displayed here -->
+            <!-- <p class="text-gray-700">Player 1: Ready to play!</p>
+            <p class="text-gray-700">Player 2: Let's do this!</p> -->
+            <!-- <div id="feedback" class="border border-gray-300 rounded-xl p-2 mb-2 text-left inline-block"></div> -->
+        </div>
+        <form id="chat-form" class="flex flex-col">
+            <input id="chat-input" type="text" placeholder="Type a message..."
+                class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">
+                Send
+            </button>
+        </form>
     </div>
+    
 
+    <script src="./js/socket.io.js"></script>
     <script src="./js/script.js"></script>
 </body>
 
