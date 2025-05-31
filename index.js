@@ -12,28 +12,27 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
 });
 
-io.on("connection", (socket) => {
+io.on("connection", async (socket) => {
   console.log("a user connected");
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
 
-  //  socket.on('chat message', (msg) => {
-  //   // console.log('message: ' + msg);
-  //   io.emit('chat message', msg);
-  // });
+  socket.on('join room', ({ userName, roomId }) => {
+    socket.join(roomId);
+    console.log(`${userName} joined room: ${roomId}`);
 
-  // socket.broadcast.emit('chat message', 'A new user has joined the chat!');
+    socket.on('typing', (data) => {
+      io.to(roomId).emit('typing', data);
+    });
 
-  socket.on('chat message', (msg) => {
-    // console.log('message: ' + msg);
-    io.emit('chat message', msg);
+    socket.on('chat message', (data) => {
+      io.to(roomId).emit('chat message', data);
+    });
   });
 
-  socket.on('typing', (data) => {
-    socket.broadcast.emit('typing', data);
-  });
+
 })
 
 server.listen(port, () => {

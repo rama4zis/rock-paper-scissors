@@ -1,4 +1,5 @@
 let userName = '';
+let room = '';
 let playerChoice = '';
 const socket = io();
 const form = document.getElementById('chat-form');
@@ -9,13 +10,11 @@ form.addEventListener('submit', function (e) {
     const userNameInput = userName.trim();
     if (message) {
         // Emit the message to the server
-        socket.emit('chat message', { userNameInput, message });
+        socket.emit('chat message', { userName: userNameInput, message });
         chatInput.value = '';
     }
     console.log('Message sent:', message);
-
-}
-);
+});
 
 // Listen for chat messages from the server
 socket.on('chat message', function (data) {
@@ -23,20 +22,18 @@ socket.on('chat message', function (data) {
 
     // Create a wrapper for the entire message (username + text)
     const messageEntryWrapper = document.createElement('div');
-    // Apply a common class for styling, and mb-2 for margin between messages
     messageEntryWrapper.classList.add('message-entry', 'mb-2');
 
     const userNameElement = document.createElement('strong');
     userNameElement.classList.add('text-gray-500', 'font-semibold', 'text-sm', 'mb-1', 'block');
-    userNameElement.textContent = `${data.userNameInput}:`;
+    userNameElement.textContent = `${data.userName}:`;
 
     const messageBubble = document.createElement('div');
     // Base classes for the message bubble itself
     messageBubble.classList.add('message', 'border', 'border-gray-300', 'rounded-xl', 'p-2', 'inline-block');
     messageBubble.innerHTML = data.message;
 
-    if (data.userNameInput === userName) {
-        // Own message: align content of wrapper to the right
+    if (data.userName === userName) {
         messageEntryWrapper.classList.add('text-right');
         userNameElement.classList.add('text-right'); // Align text within the username element
 
@@ -70,6 +67,9 @@ if (!userName) {
     );
     document.getElementById('username').disabled = false;
     document.getElementById('username').classList.remove('bg-gray-200', 'text-gray-500');
+    
+    document.getElementById('room').disabled = false;
+    document.getElementById('room').classList.remove('bg-gray-200', 'text-gray-500');
     document.getElementById('set-username').disabled = false;
     document.getElementById('set-username').classList.remove('bg-gray-200', 'text-gray-500');
 
@@ -77,7 +77,8 @@ if (!userName) {
 
 document.getElementById('set-username').addEventListener('click', function () {
     userName = document.getElementById('username').value;
-    if (userName) {
+    room = document.getElementById('room').value;
+    if (userName && room) {
         // enable all input and button
         document.querySelectorAll('input, button').forEach(element => {
             element.disabled = false;
@@ -86,11 +87,19 @@ document.getElementById('set-username').addEventListener('click', function () {
 
         document.getElementById('username').disabled = true;
         document.getElementById('username').classList.add('bg-gray-200', 'text-gray-500');
+
+        document.getElementById('room').disabled = true;
+        document.getElementById('room').classList.add('bg-gray-200', 'text-gray-500');
+
         document.getElementById('set-username').disabled = true;
         document.getElementById('set-username').classList.add('bg-gray-200', 'text-gray-500');
+
         console.log('User Name:', userName);
+        console.log('Room:', room);
+
+        socket.emit('join room', {userName: userName, roomId: room});
     } else {
-        alert('Please enter a valid username.');
+        alert('Please enter a valid username and room.');
     }
 });
 
@@ -118,7 +127,6 @@ document.getElementById('chat-input').addEventListener('keyup', function (e) {
         console.log(e.key)
         socket.emit('typing', userName);
     } else {
-        // document.getElementById('feedback').remove();
         socket.emit('typing', { key: 'Enter' });
     }
 });
@@ -151,5 +159,3 @@ document.getElementById('chat-input').addEventListener('keyup', function (e) {
         }
     }
 })
-
-// await for user set username, the turn on the chat message listener
