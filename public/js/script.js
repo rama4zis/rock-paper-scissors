@@ -67,7 +67,7 @@ if (!userName) {
     );
     document.getElementById('username').disabled = false;
     document.getElementById('username').classList.remove('bg-gray-200', 'text-gray-500');
-    
+
     document.getElementById('room').disabled = false;
     document.getElementById('room').classList.remove('bg-gray-200', 'text-gray-500');
     document.getElementById('set-username').disabled = false;
@@ -80,6 +80,8 @@ document.getElementById('set-username').addEventListener('click', function () {
     room = document.getElementById('room').value;
     if (userName && room) {
         // enable all input and button
+        socket.emit('join room', { userName: userName, roomId: room });
+        
         document.querySelectorAll('input, button').forEach(element => {
             element.disabled = false;
             element.classList.remove('bg-gray-200', 'text-gray-500');
@@ -97,7 +99,6 @@ document.getElementById('set-username').addEventListener('click', function () {
         console.log('User Name:', userName);
         console.log('Room:', room);
 
-        socket.emit('join room', {userName: userName, roomId: room});
     } else {
         alert('Please enter a valid username and room.');
     }
@@ -124,7 +125,6 @@ playerSelection.forEach(player => {
 
 document.getElementById('chat-input').addEventListener('keyup', function (e) {
     if (e.key != 'Enter') {
-        console.log(e.key)
         socket.emit('typing', userName);
     } else {
         socket.emit('typing', { key: 'Enter' });
@@ -137,7 +137,6 @@ socket.on('typing', function (data) {
             document.getElementById('feedback').remove();
         }
     } else {
-        console.log(data)
         if (data != userName) {
             if (document.getElementById('feedback')) {
                 document.getElementById('feedback').remove();
@@ -159,3 +158,13 @@ document.getElementById('chat-input').addEventListener('keyup', function (e) {
         }
     }
 })
+
+document.getElementById('play-button').addEventListener('click', function () {
+    if (playerChoice) {
+        socket.emit('play', { playerChoice: playerChoice })
+    }
+});
+
+socket.on('play', function (data) {
+    console.log(data)
+});
