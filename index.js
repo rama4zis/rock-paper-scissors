@@ -6,7 +6,7 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 const port = 3000;
 
-const rooms = {};
+const rooms = {}
 
 // declare winner
 function declareWinner(player1, player2) {
@@ -49,21 +49,63 @@ io.on("connection", (socket) => {
     socket.currentRoomId = roomId;
     socket.userName = userName;
 
-    console.log(`User ${userName} joined room ${roomId}`);
+    if(!room[roomId]) {
+      rooms[roomId] = [];
+    }
+
+    // console.log(`User ${userName} joined room ${roomId}`);
     const totalUsers = (await io.in(roomId).fetchSockets()).length;
-    console.log(`total user in room ${roomId}: ${totalUsers}`);
-    socket.emit('error', () => {
-      // throw new Error('Room is full');
-      alert('Room is full');
-    });
+    // console.log(`total user in room ${roomId}: ${totalUsers}`);
 
     // Limit max 2 users
     if (totalUsers > 2) {
+      socket.emit('room full');
       socket.leave(roomId);
-      console.log(`Total users in room ${roomId}: ${totalUsers}`);
+      console.log(`The room is full. User ${userName} left.`);
       return;
     }
+
+    // Save user
+    rooms[roomId][socket.id] = {
+      userName,
+      choice: null,
+    }
+
+    console.log(`User ${userName} joined room ${roomId}`)
   });
+
+  socket.on('play', ({ playerChoice }) => {
+    const roomId = socket.currentRoomId;
+    if (!roomId || !roomId[roomId]) return 
+
+    rooms[roomId][socket.id].choice = playerChoice;
+    console.log(`${rooms[roomId][socket.id].userName} choice: ${playerChoice}`)
+
+    const players = Object.keys(rooms[roomId]);
+    // All player already choice
+    if (
+      players.length === 2 &&
+      players[0][1].choice &&
+      players[1][1].choice
+    ) {
+      const winner = declareWinner(players[0][1], players[1][1]);
+
+      if (winner === 'draw') {
+        io.to(roomId).emit('draw');
+      } else {
+        io.to(roomId).emit('win', winner);
+      }
+
+      console.log(`Winner: ${winner.userName}`);
+      
+    }
+
+    // reset choice
+    players.forEach((player) => {
+      rooms[roomId][player].choice = null;
+    });
+
+  })
 
   socket.on('typing', (data) => {
     const roomId = socket.currentRoomId;
