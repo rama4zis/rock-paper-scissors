@@ -32,30 +32,18 @@ Follow these instructions to get a copy of the project up and running on your lo
 
 ### Installation
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/rama4zis/rock-paper-scissors.git
-    cd rock-paper-scissors
-    ```
-
-2.  **Install dependencies:**
+1.  **Install dependencies:**
     This project uses Express and Socket.IO.
     ```bash
-    npm install express socket.io
+    npm install
     ```
-    (If you have a `package.json` file, you can simply run `npm install`)
 
 ### Running the Application
 
 1.  **Start the server:**
     ```bash
-    node index.js
+    npm run start
     ```
-    For development, you might prefer using `nodemon` for automatic server restarts on file changes:
-    ```bash
-    nodemon index.js
-    ```
-
 2.  **Open in your browser:**
     Navigate to `http://localhost:3000`.
 
