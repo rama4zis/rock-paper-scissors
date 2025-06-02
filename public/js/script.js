@@ -85,6 +85,9 @@ document.getElementById('set-username').addEventListener('click', function () {
         document.querySelectorAll('input, button').forEach(element => {
             element.disabled = false;
             element.classList.remove('bg-gray-200', 'text-gray-500');
+            document.querySelectorAll('button').forEach(button => {
+                button.classList.add('cursor-pointer');
+            });
         });
 
         document.getElementById('username').disabled = true;
@@ -160,6 +163,7 @@ document.getElementById('chat-input').addEventListener('keyup', function (e) {
 })
 
 document.getElementById('play-button').addEventListener('click', function () {
+    // console.log(playerChoice)
     if (playerChoice) {
         socket.emit('play', { playerChoice: playerChoice })
     }

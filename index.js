@@ -6,13 +6,18 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 const port = 3000;
 
-const rooms = {}
+const rooms = 
+{
+  // 
+}
 
 // declare winner
 function declareWinner(player1, player2) {
   const choice1 = player1.choice;
   const choice2 = player2.choice;
 
+
+  console.log(`player1: ${choice1}, player2: ${choice2}`)
   if (choice1 === choice2) {
     return "draw";
   }
@@ -49,7 +54,7 @@ io.on("connection", (socket) => {
     socket.currentRoomId = roomId;
     socket.userName = userName;
 
-    if(!room[roomId]) {
+    if(!rooms[roomId]) {
       rooms[roomId] = [];
     }
 
@@ -75,35 +80,37 @@ io.on("connection", (socket) => {
   });
 
   socket.on('play', ({ playerChoice }) => {
+    console.log(`${socket.userName} choice ${playerChoice}, room: ${socket.currentRoomId}`);
     const roomId = socket.currentRoomId;
-    if (!roomId || !roomId[roomId]) return 
+    // if (!roomId || !roomId[roomId]) return 
 
     rooms[roomId][socket.id].choice = playerChoice;
-    console.log(`${rooms[roomId][socket.id].userName} choice: ${playerChoice}`)
-
-    const players = Object.keys(rooms[roomId]);
+    const players = Object.entries(rooms[roomId]);
+    // console.log(`Rooms : ${JSON.stringify(rooms)}`)
+    // console.log(`players : ${JSON.stringify(players)}`)
+    // console.log(`players : ${JSON.stringify(players[0])}`)
+    // console.log(`players : ${JSON.stringify(players[0][0])}`)
+    // console.log(`players : ${JSON.stringify(players[0][1])}`)
+    // console.log(`player total = ${Object.keys(rooms[roomId]).length}`)
+    // console.log(`${players[0][1]} `)
     // All player already choice
     if (
       players.length === 2 &&
       players[0][1].choice &&
       players[1][1].choice
     ) {
-      const winner = declareWinner(players[0][1], players[1][1]);
+      const result = declareWinner(players[0][1], players[1][1]);
 
-      if (winner === 'draw') {
+      if (result === 'draw') {
         io.to(roomId).emit('draw');
       } else {
-        io.to(roomId).emit('win', winner);
+        io.to(roomId).emit('win', result);
       }
 
-      console.log(`Winner: ${winner.userName}`);
+      console.log(`result: ${result.winner.userName} win!`);
       
     }
 
-    // reset choice
-    players.forEach((player) => {
-      rooms[roomId][player].choice = null;
-    });
 
   })
 
