@@ -108,6 +108,9 @@ io.on("connection", (socket) => {
       }
 
       console.log(`result: ${result.winner.userName} win!`);
+
+      // send result 
+      io.to(roomId).emit('result', result);
       
     }
 

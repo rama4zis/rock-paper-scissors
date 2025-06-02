@@ -172,3 +172,47 @@ document.getElementById('play-button').addEventListener('click', function () {
 socket.on('play', function (data) {
     console.log(data)
 });
+
+socket.on('result', function(data) {
+    console.log(data)
+    if (data.winner.userName === userName) {
+        document.getElementById('modal-title').textContent = 'You Win!';
+    } else if (data === 'draw') {
+        document.getElementById('modal-title').textContent = 'Draw!';
+    } else {
+        document.getElementById('modal-title').textContent = 'You Lose!';
+    }
+    document.getElementById('winner-info').textContent = `Winner: ${data.winner.userName}`;
+    document.getElementById('loser-info').textContent = `Loser: ${data.loser.userName}`;
+    document.getElementById('winner-choice').textContent = `Winner's choice: ${data.winner.choice}`;
+    document.getElementById('loser-choice').textContent = `Loser's choice: ${data.loser.choice}`;
+    document.getElementById('result-modal').classList.remove('hidden');
+});
+
+document.getElementById('close-modal').addEventListener('click', function() {
+    document.getElementById('result-modal').classList.add('hidden');
+    // Reset the game state if needed
+    playerChoice = '';
+    playerSelection.forEach(p => {
+        p.classList.remove('bg-red-400', 'selected');
+        p.classList.add('bg-gray-200');
+    });
+});
+
+socket.on('room full', function() {
+    alert('The room is full. Please try another room.');
+    userName = '';
+    room = '';
+    document.querySelectorAll('input, button').forEach(element => {
+        element.disabled = true;
+        element.classList.add('bg-gray-200', 'text-gray-500');
+    });
+    document.getElementById('username').disabled = false;
+    document.getElementById('username').classList.remove('bg-gray-200', 'text-gray-500');
+    document.getElementById('room').disabled = false;
+    document.getElementById('room').classList.remove('bg-gray-200', 'text-gray-500');
+    document.getElementById('set-username').disabled = false;
+    document.getElementById('set-username').classList.remove('bg-gray-200', 'text-gray-500');
+    document.getElementById('set-room').disabled = false;
+    document.getElementById('set-room').classList.remove('bg-gray-200', 'text-gray-500');
+});
