@@ -54,6 +54,8 @@ io.on("connection", (socket) => {
     socket.currentRoomId = roomId;
     socket.userName = userName;
 
+    io.to(roomId).emit('player joined', { userName });
+
     if(!rooms[roomId]) {
       rooms[roomId] = [];
     }
@@ -80,6 +82,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on('play', ({ playerChoice }) => {
+    // player already choice
+    io.to(socket.currentRoomId).emit('choice', { userName: socket.userName });
+
     console.log(`${socket.userName} choice ${playerChoice}, room: ${socket.currentRoomId}`);
     const roomId = socket.currentRoomId;
     // if (!roomId || !roomId[roomId]) return 
@@ -112,6 +117,9 @@ io.on("connection", (socket) => {
       // send result 
       io.to(roomId).emit('result', result);
       
+      // reset choice
+      rooms[roomId][players[0][0]].choice = null;
+      rooms[roomId][players[1][0]].choice = null;
     }
 
 
@@ -134,5 +142,5 @@ io.on("connection", (socket) => {
 });
 
 server.listen(port, () => {
-  console.log(`Example app listening on port ${port} `);
+  console.log(`App listening on port ${port} `);
 });

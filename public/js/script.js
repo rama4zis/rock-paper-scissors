@@ -81,7 +81,7 @@ document.getElementById('set-username').addEventListener('click', function () {
     if (userName && room) {
         // enable all input and button
         socket.emit('join room', { userName: userName, roomId: room });
-        
+
         document.querySelectorAll('input, button').forEach(element => {
             element.disabled = false;
             element.classList.remove('bg-gray-200', 'text-gray-500');
@@ -173,7 +173,7 @@ socket.on('play', function (data) {
     console.log(data)
 });
 
-socket.on('result', function(data) {
+socket.on('result', function (data) {
     console.log(data)
     if (data.winner.userName === userName) {
         document.getElementById('modal-title').textContent = 'You Win!';
@@ -189,7 +189,7 @@ socket.on('result', function(data) {
     document.getElementById('result-modal').classList.remove('hidden');
 });
 
-document.getElementById('close-modal').addEventListener('click', function() {
+document.getElementById('close-modal').addEventListener('click', function () {
     document.getElementById('result-modal').classList.add('hidden');
     // Reset the game state if needed
     playerChoice = '';
@@ -199,7 +199,7 @@ document.getElementById('close-modal').addEventListener('click', function() {
     });
 });
 
-socket.on('room full', function() {
+socket.on('room full', function () {
     alert('The room is full. Please try another room.');
     userName = '';
     room = '';
@@ -215,4 +215,25 @@ socket.on('room full', function() {
     document.getElementById('set-username').classList.remove('bg-gray-200', 'text-gray-500');
     document.getElementById('set-room').disabled = false;
     document.getElementById('set-room').classList.remove('bg-gray-200', 'text-gray-500');
+});
+
+socket.on('choice', function (data) {
+    console.log(data);
+    document.getElementById('chat-messages').innerHTML += `
+        <div class="message-entry mb-2 text-center">
+            <div class="message p-2 inline-block text-green-600">
+                ${data.userName} has made their choice.
+            </div>
+        </div>
+    `
+});
+socket.on('player joined', function (data) {
+    console.log(data);
+    document.getElementById('chat-messages').innerHTML += `
+        <div class="message-entry mb-2 text-center">
+            <div class="message p-2 inline-block text-blue-600">
+                ${data.userName} has joined the room.
+            </div>
+        </div>
+    `
 });
