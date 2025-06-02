@@ -33,7 +33,6 @@ Follow these instructions to get a copy of the project up and running on your lo
 ### Installation
 
 1.  **Install dependencies:**
-    This project uses Express and Socket.IO.
     ```bash
     npm install
     ```
